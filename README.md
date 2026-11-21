@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GramSeva (గ్రామసేవ)
 ### Web-Based Grievance Management System for Rural Panchayats
 **Community Service Project (CSP) • e-Governance Civic Technology**
@@ -153,3 +154,6 @@ python scripts/seed_db.py --reset
 - **Typography:** Google Fonts (*Plus Jakarta Sans*, *Inter*, *Noto Sans Telugu*)
 - **Icons:** Native Unicode & Custom SVG Panchayat Crest
 - **Testing:** Python `unittest` Automated Regression Suite
+=======
+# Jan-Setu
+>>>>>>> 148ccfa2d276404e24675938224371618677187b
