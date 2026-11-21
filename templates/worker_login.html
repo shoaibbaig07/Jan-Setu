@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('portal_title') }}{% endblock %}
+
+{% block navbar %}
+<!-- Worker Login Portal Header -->
+<nav class="main-navbar" style="border-bottom: 3px solid #D97706;">
+  <div class="navbar-container">
+    <a href="{{ url_for('index') }}" class="brand-wrapper">
+      <img src="{{ url_for('static', filename='img/crest.svg') }}" alt="GramSeva Seal" class="brand-crest">
+      <div class="brand-text-col">
+        <div class="brand-title">
+          GramSeva <span class="badge" style="background:#D97706; color:#FFFFFF; font-size:0.65rem; padding:2px 7px; border-radius:4px; vertical-align:middle;" data-i18n="role_worker">{{ t('role_worker', 'Worker') }}</span>
+        </div>
+        <div class="brand-subtext" data-i18n="field_ops_tag">{{ t('field_ops_tag', 'Ananthapur Gram Panchayat • Field Operations Console') }}</div>
+      </div>
+    </a>
+
+    <!-- Top Links -->
+    <div style="display:flex; align-items:center; gap:1rem;">
+      <a href="{{ url_for('index') }}" class="btn btn-outline btn-sm"><span data-i18n="nav_home">{{ t('nav_home', 'Home') }}</span></a>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding: 2.5rem 1rem;">
+
+  <!-- Portal Navigation Tabs (Separated Logins) -->
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #E3D8CF; padding-bottom: 0.5rem;">
+    <a href="{{ url_for('citizen_login_page') }}" class="btn btn-sm btn-outline" style="flex: 1; text-align: center; border-radius: 6px;">
+      <span data-i18n="auth_citizen_portal">{{ t('auth_citizen_portal', 'Citizen Portal') }}</span>
+    </a>
+    <a href="{{ url_for('worker_login_page') }}" class="btn btn-sm btn-primary" style="flex: 1; text-align: center; border-radius: 6px; font-weight: 700; background: #D97706; border-color: #D97706;">
+      <span data-i18n="auth_worker_login">{{ t('auth_worker_login', 'Worker Login') }}</span>
+    </a>
+    <a href="{{ url_for('admin_login_page') }}" class="btn btn-sm btn-outline" style="flex: 1; text-align: center; border-radius: 6px;">
+      <span data-i18n="auth_admin_login">{{ t('auth_admin_login', 'Admin Login') }}</span>
+    </a>
+  </div>
+
+  <!-- Worker Login Card -->
+  <div class="card" style="padding: 2.25rem 2rem; border-top: 5px solid #D97706; box-shadow: var(--shadow-md); border-radius: 12px;">
+    
+    <div style="text-align: center; margin-bottom: 1.75rem;">
+      <h1 style="font-size: 1.6rem; color: var(--civic-dark); font-weight: 800; margin-bottom: 0.35rem;" data-i18n="auth_worker_login_title">
+        {{ t('auth_worker_login_title', 'Worker Login') }}
+      </h1>
+      <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.45; margin: 0;" data-i18n="auth_worker_login_sub">
+        {{ t('auth_worker_login_sub', 'Sign in to view assigned field tickets, record site remediation progress, and submit proof.') }}
+      </p>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="w-error-alert" style="display: none; margin-bottom: 1.25rem;">
+      <div style="background: #FEE2E2; border: 1px solid #FCA5A5; color: #991B1B; padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+        <span class="badge-dot" style="background:#DC2626;" aria-hidden="true"></span>
+        <span id="w-error-text"></span>
+      </div>
+    </div>
+
+    <!-- DB Skill Detection Notice -->
+    <div id="w-skill-detected-badge" style="display:none; background:#F1E2D7; border:1px solid #E3D8CF; color:#34424A; padding:0.65rem 0.85rem; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:1.25rem;">
+      <span class="badge-dot" style="background:#34424A;" aria-hidden="true"></span> <span id="w-skill-detected-text"></span>
+    </div>
+
+    <!-- Worker Login Form -->
+    <form id="worker-login-form" onsubmit="handleWorkerLogin(event)" novalidate>
+      
+      <!-- Worker Name -->
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="worker-name" class="form-label" style="font-weight: 600;">
+          <span data-i18n="auth_worker_ph_name">{{ t('auth_lbl_name', 'Worker Name') }}</span> <span class="required" style="color:#DC2626;">*</span>
+        </label>
+        <input type="text" id="worker-name" name="name" class="form-control" required
+               placeholder="{{ t('auth_worker_ph_name', 'e.g. Sri Shiva Kumar') }}"
+               data-i18n-placeholder="auth_worker_ph_name"
+               style="padding: 0.75rem 1rem; font-size: 0.95rem;">
+      </div>
+
+      <!-- Worker ID & Mobile in 2 Columns -->
+      <div class="form-grid-2" style="margin-bottom: 1.25rem;">
+        <!-- Worker ID -->
+        <div class="form-group">
+          <label for="worker-id" class="form-label" style="font-weight: 600;">
+            <span data-i18n="auth_worker_lbl_id">{{ t('auth_worker_lbl_id', 'Worker ID') }}</span> <span class="required" style="color:#DC2626;">*</span>
+          </label>
+          <input type="text" id="worker-id" name="worker_id" class="form-control" required
+                 placeholder="{{ t('auth_worker_ph_id', 'e.g. WRK-WAT-01') }}"
+                 data-i18n-placeholder="auth_worker_ph_id"
+                 onblur="detectWorkerSkillFromDB()"
+                 style="padding: 0.75rem 1rem; font-size: 0.95rem; font-family: monospace; font-weight: 700; text-transform: uppercase;">
+        </div>
+
+        <!-- Registered Mobile Number -->
+        <div class="form-group">
+          <label for="worker-mobile" class="form-label" style="font-weight: 600;">
+            <span data-i18n="auth_lbl_mobile">{{ t('auth_lbl_mobile', 'Registered Mobile Number') }}</span> <span class="required" style="color:#DC2626;">*</span>
+          </label>
+          <input type="tel" id="worker-mobile" name="mobile" class="form-control" required maxlength="15"
+                 placeholder="e.g. 9848077889"
+                 onblur="detectWorkerSkillFromDB()"
+                 style="padding: 0.75rem 1rem; font-size: 0.95rem;">
+        </div>
+      </div>
+
+      <!-- Work Type / Skill (6 standard skills) -->
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label for="worker-skill" class="form-label" style="font-weight: 600; margin:0;">
+            <span data-i18n="auth_worker_lbl_skill">{{ t('auth_worker_lbl_skill', 'Work Type / Skill') }}</span> <span class="required" style="color:#DC2626;">*</span>
+          </label>
+          <span style="font-size:0.75rem; color:#5F686D;" data-i18n="auth_worker_auto_note">{{ t('auth_worker_auto_note', 'Loaded from DB when available') }}</span>
+        </div>
+        <select id="worker-skill" name="skill" class="form-control" required style="padding: 0.75rem 1rem; font-size: 0.95rem;">
+          <option value="" data-i18n="opt_select_skill">{{ t('opt_select_skill', '-- Select Work Type / Skill --') }}</option>
+          <option value="Electrician" data-i18n="skill_electrician">{{ t('skill_electrician', 'Electrician') }}</option>
+          <option value="Plumber" data-i18n="skill_plumber">{{ t('skill_plumber', 'Plumber') }}</option>
+          <option value="Mechanic" data-i18n="skill_mechanic">{{ t('skill_mechanic', 'Mechanic') }}</option>
+          <option value="Mason" data-i18n="skill_mason">{{ t('skill_mason', 'Mason') }}</option>
+          <option value="Sanitation Worker" data-i18n="skill_sanitation">{{ t('skill_sanitation', 'Sanitation Worker') }}</option>
+          <option value="Other" data-i18n="skill_other">{{ t('skill_other', 'Other') }}</option>
+        </select>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="worker-password" class="form-label" style="font-weight: 600;">
+          <span data-i18n="lbl_password">{{ t('lbl_password', 'Password') }}</span> <span class="required" style="color:#DC2626;">*</span>
+        </label>
+        <input type="password" id="worker-password" name="password" class="form-control" required
+               placeholder="{{ t('auth_ph_password', 'Enter worker password') }}"
+               data-i18n-placeholder="auth_ph_password"
+               style="padding: 0.75rem 1rem; font-size: 0.95rem;">
+        <div style="font-size: 0.78rem; color: #D97706; margin-top: 0.25rem;" data-i18n="auth_worker_hint_pass">
+          {{ t('auth_worker_hint_pass', 'Default demo password: worker123 (e.g. Shiva Kumar: WRK-WAT-01 / 9848077889)') }}
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="btn-w-submit" class="btn" style="width: 100%; padding: 0.85rem; font-size: 1.05rem; font-weight: 700; border-radius: 8px; background: #D97706; color: #FFFFFF; border: none; cursor: pointer;">
+        <span data-i18n="auth_btn_worker_login">{{ t('auth_btn_worker_login', 'Sign In as Worker →') }}</span>
+      </button>
+
+      <!-- Register Link for Field Workers -->
+      <div style="text-align: center; margin-top: 1.25rem; font-size: 0.88rem; color: #5F686D;">
+        <span data-i18n="auth_txt_new_technician">{{ t('auth_txt_new_technician', 'New field technician?') }}</span>
+        <a href="{{ url_for('worker_register_page') }}" style="color: #D97706; font-weight: 700; text-decoration: none; margin-left: 0.35rem;" data-i18n="auth_lnk_register_worker">
+          {{ t('auth_lnk_register_worker', 'Register worker profile →') }}
+        </a>
+      </div>
+    </form>
+
+  </div>
+
+  <!-- Auxiliary Redirection Links -->
+  <div style="margin-top: 1.75rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+    <div>
+      <span data-i18n="auth_txt_are_citizen">{{ t('auth_txt_are_citizen', 'Are you a village citizen?') }}</span>
+      <a href="{{ url_for('citizen_login_page') }}" style="color: #34424A; font-weight: 600; text-decoration: none; margin-left: 0.25rem;" data-i18n="auth_lnk_citizen_login">
+        {{ t('auth_lnk_citizen_login', 'Citizen Login →') }}
+      </a>
+    </div>
+    <div>
+      <span data-i18n="auth_txt_are_admin">{{ t('auth_txt_are_admin', 'Panchayat Secretary or Official?') }}</span>
+      <a href="{{ url_for('admin_login_page') }}" style="color: var(--civic-dark); font-weight: 600; text-decoration: none; margin-left: 0.25rem;" data-i18n="auth_lnk_admin_login">
+        {{ t('auth_lnk_admin_login', 'Admin Login →') }}
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Client Controller Script -->
+<script>
+  function showWorkerError(msg) {
+    const alertBox = document.getElementById('w-error-alert');
+    const textEl = document.getElementById('w-error-text');
+    if (!alertBox || !textEl) return;
+    textEl.textContent = msg;
+    alertBox.style.display = 'block';
+  }
+
+  function hideWorkerError() {
+    const el = document.getElementById('w-error-alert');
+    if (el) el.style.display = 'none';
+  }
+
+  // Load registered worker skill from DB automatically when Worker ID or Mobile is typed
+  async function detectWorkerSkillFromDB() {
+    const workerId = document.getElementById('worker-id').value.trim();
+    const mobile = document.getElementById('worker-mobile').value.trim();
+    if (!workerId && !mobile) return;
+
+    try {
+      const res = await fetch(`/api/worker-lookup?worker_id=${encodeURIComponent(workerId)}&mobile=${encodeURIComponent(mobile)}`);
+      const data = await res.json();
+
+      if (data.success && data.found) {
+        const nameInput = document.getElementById('worker-name');
+        if (!nameInput.value && data.name) {
+          nameInput.value = data.name;
+        }
+
+        const skillSelect = document.getElementById('worker-skill');
+        if (data.skill) {
+          skillSelect.value = data.skill;
+        }
+
+        const badge = document.getElementById('w-skill-detected-badge');
+        const badgeText = document.getElementById('w-skill-detected-text');
+        const t = typeof window.t === 'function' ? window.t : (k, d) => d || k;
+        if (badge && badgeText) {
+          badgeText.textContent = `${t('auth_skill_detected', 'Skill identified from database:')} ${data.skill_trade || data.skill}`;
+          badge.style.display = 'block';
+        }
+      }
+    } catch (e) {
+      console.log('Skill lookup info:', e.message);
+    }
+  }
+
+  async function handleWorkerLogin(e) {
+    e.preventDefault();
+    hideWorkerError();
+
+    const t = typeof window.t === 'function' ? window.t : (k, d) => d || k;
+    const name = document.getElementById('worker-name').value.trim();
+    const workerId = document.getElementById('worker-id').value.trim();
+    const mobile = document.getElementById('worker-mobile').value.trim();
+    const skill = document.getElementById('worker-skill').value;
+    const password = document.getElementById('worker-password').value;
+
+    if (!name) {
+      showWorkerError(t('err_missing_name', 'Please enter worker name.'));
+      return;
+    }
+    if (!workerId) {
+      showWorkerError(t('err_missing_id', 'Please enter Worker ID.'));
+      return;
+    }
+    if (!mobile) {
+      showWorkerError(t('err_missing_mobile', 'Please enter registered mobile number.'));
+      return;
+    }
+    if (!skill) {
+      showWorkerError(t('err_missing_skill', 'Please select work type/skill.'));
+      return;
+    }
+    if (!password) {
+      showWorkerError(t('err_missing_pass', 'Please enter password.'));
+      return;
+    }
+
+    const btn = document.getElementById('btn-w-submit');
+    btn.disabled = true;
+    btn.textContent = t('auth_btn_signing_in', 'Signing in...');
+
+    try {
+      const res = await fetch('/api/login/worker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          worker_id: workerId,
+          mobile: mobile,
+          skill: skill,
+          password: password
+        })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.href = data.redirect || '/worker';
+      } else {
+        showWorkerError(data.error || t('err_failed', 'Worker login failed. Please check your credentials.'));
+      }
+    } catch (err) {
+      showWorkerError(err.message || t('err_failed', 'Worker login failed. Please check your credentials.'));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t('auth_btn_worker_login', 'Sign In as Worker →');
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('portal_title') }}{% endblock %}
+
+{% block navbar %}
+<!-- ==========================================
+     CITIZEN PORTAL NAVIGATION LAYOUT
+     Permitted Navigation: Home, Submit Grievance, Track Grievance
+     ========================================== -->
+<nav class="main-navbar citizen-navbar" style="border-bottom: 3px solid var(--civic-primary);">
+  <div class="navbar-container">
+    <a href="{{ url_for('citizen_portal') }}" class="brand-wrapper">
+      <img src="{{ url_for('static', filename='img/crest.svg') }}" alt="GramSeva Seal" class="brand-crest">
+      <div class="brand-text-col">
+        <div class="brand-title">
+          GramSeva <span class="badge" style="background:#34424A; color:#FFFFFF; font-size:0.65rem; padding:2px 7px; border-radius:4px; vertical-align:middle; letter-spacing:0.5px;" data-i18n="badge_citizen_portal">{{ t('badge_citizen_portal') }}</span>
+        </div>
+        <div class="brand-subtext" data-i18n="rangapuram_panchayat">{{ t('rangapuram_panchayat') }}</div>
+      </div>
+    </a>
+
+    <ul class="nav-links">
+      <li>
+        <a href="{{ url_for('citizen_portal') }}" class="nav-link {% if request.endpoint in ('citizen_portal', 'pages.citizen_portal') %}active{% endif %}">
+          <span data-i18n="nav_home">{{ t('nav_home') }}</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('citizen_submit') }}" class="nav-link {% if request.endpoint in ('citizen_submit', 'pages.citizen_submit') %}active{% endif %}">
+          <span data-i18n="nav_citizen_submit">{{ t('nav_citizen_submit') }}</span>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('citizen_track') }}" class="nav-link {% if request.endpoint in ('citizen_track', 'pages.citizen_track', 'citizen_track_with_id', 'pages.citizen_track_with_id') %}active{% endif %}">
+          <span data-i18n="nav_citizen_track">{{ t('nav_citizen_track') }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-actions" id="navbar-user-area">
+      <!-- Injected via checkAuth -->
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block footer_quick_links %}
+<ul style="list-style:none; font-size:0.85rem; color:#E3D8CF; display:flex; flex-direction:column; gap:0.4rem;">
+  <li><a href="{{ url_for('citizen_portal') }}" style="color:#E3D8CF;" data-i18n="nav_citizen_home">{{ t('nav_citizen_home') }}</a></li>
+  <li><a href="{{ url_for('citizen_submit') }}" style="color:#E3D8CF;" data-i18n="nav_citizen_submit">{{ t('nav_citizen_submit') }}</a></li>
+  <li><a href="{{ url_for('citizen_track') }}" style="color:#E3D8CF;" data-i18n="nav_citizen_track">{{ t('nav_citizen_track') }}</a></li>
+  <li><a href="tel:18004257890" style="color:#FDE68A;">Panchayat Helpline: 1800-425-7890</a></li>
+</ul>
+{% endblock %}

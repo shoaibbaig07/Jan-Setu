@@ -1,0 +1,362 @@
+{% extends "citizen_layout.html" %}
+
+{% block title %}{{ t('rangapuram_panchayat', 'Rangapuram Panchayat') }} | {{ t('badge_citizen_portal', 'Citizen
+Grievance Portal') }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 960px; padding: 2rem 1.25rem;">
+
+  <!-- Pending Citizen Verification Alert (Injected if worker finished work) -->
+  <div id="citizen-home-alert" style="display:none; margin-bottom: 1.5rem;"></div>
+
+  <!-- Welcome Hero Card -->
+  <div class="card"
+    style="background: linear-gradient(135deg, #F1E2D7 0%, #FFFFFF 100%); border-left: 6px solid var(--civic-primary); padding: 2.25rem 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-md);">
+    <div
+      style="display: inline-flex; align-items: center; gap: 0.4rem; background: #F1E2D7; color: #263239; font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 0.85rem; letter-spacing: 0.04em;"
+      data-i18n="rangapuram_panchayat">
+      {{ t('rangapuram_panchayat', 'RANGAPURAM GRAM PANCHAYAT') }}
+    </div>
+
+    <h1 style="font-size: 2rem; color: var(--civic-dark); margin-bottom: 0.75rem; font-weight: 800; line-height: 1.25;"
+      data-i18n="citizen_home_title">
+      {{ t('citizen_home_title', 'Welcome to Rangapuram Panchayat Grievance Service') }}
+    </h1>
+
+    <p style="font-size: 1.05rem; color: #5F686D; max-width: 780px; line-height: 1.6; margin: 0;"
+      data-i18n="citizen_portal_desc">
+      {{ t('citizen_portal_desc', 'A simple and transparent way for residents of Rangapuram to report village
+      issues—such as drinking water supply, broken streetlights, sanitation, drainage, and road repairs. Submit your
+      complaint online and track its status until it is resolved by Panchayat workers.') }}
+    </p>
+  </div>
+
+  <!-- Two Prominent Action Cards -->
+  <div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+
+    <!-- Submit Grievance Card -->
+    <div class="card card-lift"
+      style="display: flex; flex-direction: column; justify-content: space-between; border-top: 5px solid var(--civic-primary); padding: 2rem 1.75rem;">
+      <div>
+        <div
+          style="width: 56px; height: 56px; border-radius: 12px; background: #F1E2D7; color: #34424A; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+        </div>
+        <h2 style="font-size: 1.4rem; color: var(--civic-dark); margin-bottom: 0.5rem; font-weight: 700;"
+          data-i18n="nav_citizen_submit">
+          {{ t('nav_citizen_submit', 'Submit Grievance') }}
+        </h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.75rem;"
+          data-i18n="submit_subtitle">
+          {{ t('submit_subtitle', 'Report a new civic issue in your ward. You can describe the problem and upload a
+          photo for the Panchayat team.') }}
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('citizen_submit') }}" class="btn btn-primary"
+          style="width: 100%; padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 700; border-radius: 8px;"
+          data-i18n="btn_submit_complaint">
+          {{ t('btn_submit_complaint', 'Submit Grievance →') }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Track Grievance Card -->
+    <div class="card card-lift"
+      style="display: flex; flex-direction: column; justify-content: space-between; border-top: 5px solid #B85C38; padding: 2rem 1.75rem;">
+      <div>
+        <div
+          style="width: 56px; height: 56px; border-radius: 12px; background: #F1E2D7; color: #34424A; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
+        <h2 style="font-size: 1.4rem; color: var(--civic-dark); margin-bottom: 0.5rem; font-weight: 700;"
+          data-i18n="nav_citizen_track">
+          {{ t('nav_citizen_track', 'Track Grievance') }}
+        </h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.75rem;"
+          data-i18n="hero_track_desc">
+          {{ t('hero_track_desc', 'Check the real-time status and progress updates of your submitted grievances. Confirm
+          when the problem is solved.') }}
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('citizen_track') }}" class="btn btn-outline-primary"
+          style="width: 100%; padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 700; border-radius: 8px; border-color: #B85C38; color: #B85C38;"
+          data-i18n="nav_track">
+          {{ t('nav_track', 'Track Grievance →') }}
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Double Verification Grievance Lifecycle Guide (7 Stages) -->
+  <div class="card double-verif-card"
+    style="margin-bottom: 2rem; border-left: 4px solid var(--civic-primary); padding: 1.5rem;">
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem;">
+      <h3
+        style="font-weight: 700; font-size: 1.05rem; color: var(--civic-dark); display: flex; align-items: center; gap: 0.4rem; margin: 0;">
+        <strong data-i18n="track_double_verif_title">{{ t('track_double_verif_title', 'Double Verification Grievance
+          Lifecycle') }}</strong>
+      </h3>
+      <div style="font-size: 0.82rem; color: var(--text-muted);" data-i18n="step4_desc">
+        {{ t('step4_desc', 'Every grievance requires both Field Officer review and Citizen Confirmation before final
+        resolution.') }}
+      </div>
+    </div>
+
+    <div class="double-verif-stepper">
+      <div class="dv-step completed">
+        <div class="dv-step-circle">✓</div>
+        <div class="dv-step-title" data-i18n="status_submitted">{{ t('status_submitted', 'Complaint Submitted') }}</div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step">
+        <div class="dv-step-circle">2</div>
+        <div class="dv-step-title" data-i18n="status_assigned">{{ t('status_assigned', 'Assigned') }}</div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step">
+        <div class="dv-step-circle">3</div>
+        <div class="dv-step-title" data-i18n="status_in_progress">{{ t('status_in_progress', 'Work in Progress') }}
+        </div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step">
+        <div class="dv-step-circle">4</div>
+        <div class="dv-step-title" data-i18n="status_work_completed">{{ t('status_work_completed', 'Work Completed') }}
+        </div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step">
+        <div class="dv-step-circle">5</div>
+        <div class="dv-step-title" data-i18n="status_officer_verification">{{ t('status_officer_verification', 'Officer
+          Verified') }}</div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step" style="border: 1.5px dashed #34424A; border-radius: 6px; padding: 0.25rem;">
+        <div class="dv-step-circle" style="border-color: #34424A; color: #34424A;">6</div>
+        <div class="dv-step-title" style="color: #34424A; font-weight: 700;" data-i18n="status_citizen_verification">{{
+          t('status_citizen_verification', 'Citizen Verification') }}</div>
+      </div>
+      <div class="dv-arrow" aria-hidden="true">➔</div>
+      <div class="dv-step">
+        <div class="dv-step-circle">7</div>
+        <div class="dv-step-title" data-i18n="status_resolved">{{ t('status_resolved', 'Resolved') }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panchayat Contact & Helpline Footer Note -->
+  <div
+    style="display: flex; justify-content: space-between; align-items: center; background: #F1E2D7; border-radius: 8px; padding: 1rem 1.25rem; flex-wrap: wrap; gap: 0.75rem; font-size: 0.88rem; color: #5F686D;">
+    <div>
+      <strong data-i18n="footer_office_title">{{ t('footer_office_title', 'Panchayat Office') }}:</strong> 1800-425-7890
+      (Toll-Free, 9 AM – 5 PM)
+    </div>
+    <div data-i18n="rangapuram_panchayat">
+      {{ t('rangapuram_panchayat', 'Rangapuram Gram Panchayat, Andhra Pradesh') }}
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal: Citizen Resolution Verification (Double Verification Confirmation) -->
+<div id="modal-citizen-verify" class="modal-backdrop">
+  <div class="modal-box" style="max-width: 580px;">
+    <div class="modal-header" style="background: #F1E2D7; border-bottom: 1px solid #E3D8CF;">
+      <div>
+        <div
+          style="font-size: 0.75rem; color: #34424A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;"
+          data-i18n="feedback_modal_title">
+          {{ t('feedback_modal_title', 'CITIZEN RESOLUTION CONFIRMATION') }}
+        </div>
+        <h3 id="verify-modal-tracking-id"
+          style="font-size: 1.2rem; color: #263239; font-family: monospace; margin-top: 0.2rem;"></h3>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('modal-citizen-verify')">&times;</button>
+    </div>
+
+    <div class="modal-body" style="padding: 1.5rem;">
+      <div
+        style="text-align: center; padding-bottom: 1.25rem; border-bottom: 1px solid #E3D8CF; margin-bottom: 1.25rem;">
+        <div class="empty-state-disc" aria-hidden="true"></div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: #252B2E; margin: 0 0 0.4rem 0;"
+          data-i18n="feedback_modal_title">
+          {{ t('feedback_modal_title', 'Citizen Resolution Verification') }}
+        </h3>
+        <p style="font-size: 1rem; color: #263239; margin: 0; font-weight: 600; line-height: 1.5;"
+          data-i18n="feedback_prompt">
+          {{ t('citizen_verif_prompt', 'The worker has reported that the work is complete. Please confirm whether your
+          original problem has actually been solved.') }}
+        </p>
+      </div>
+
+      <!-- Grievance Summary -->
+      <div
+        style="background: #F8F4EF; border: 1px solid #E3D8CF; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="font-size: 0.78rem; color: #5F686D; font-weight: 600; text-transform: uppercase;"
+          data-i18n="lbl_subject">{{ t('lbl_subject', 'Complaint Subject:') }}
+        </div>
+        <div id="verify-modal-title" style="font-weight: 700; color: #252B2E; font-size: 0.95rem; margin-top: 0.15rem;">
+        </div>
+        <div id="verify-modal-meta" style="font-size: 0.8rem; color: #5F686D; margin-top: 0.3rem;"></div>
+      </div>
+
+      <!-- Remarks -->
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="citizen-verify-remarks" class="form-label"
+          style="font-weight: 600; font-size: 0.85rem; color: #5F686D;" data-i18n="lbl_citizen_comments">
+          {{ t('lbl_citizen_comments', 'Remarks / Additional Comments (Optional)') }}
+        </label>
+        <textarea id="citizen-verify-remarks" class="form-control" rows="2"
+          placeholder="{{ t('ph_citizen_comments', 'e.g. Pipeline is working properly now, or small leak still remains...') }}"
+          data-i18n-placeholder="ph_citizen_comments"></textarea>
+      </div>
+
+      <!-- 4 Verification Action Buttons -->
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <button type="button" id="btn-verify-yes" onclick="submitModalCitizenVerification('YES')" class="btn touch-btn"
+          style="background:#34424A; color:#ffffff; padding:0.85rem 1.25rem; border-radius:8px; font-weight:700; font-size:1rem; display:flex; justify-content:space-between; align-items:center; border:none; cursor:pointer;">
+          <span data-i18n="btn_verify_yes">✓ {{ t('btn_verify_yes', 'Yes, completely solved') }}</span>
+          <span
+            style="font-size:0.75rem; opacity:0.9; font-weight:500; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;"
+            data-i18n="status_resolved">{{ t('status_resolved', 'Problem Solved') }}</span>
+        </button>
+
+        <button type="button" id="btn-verify-partially" onclick="submitModalCitizenVerification('PARTIALLY')"
+          class="btn touch-btn"
+          style="background:#D97706; color:#ffffff; padding:0.85rem 1.25rem; border-radius:8px; font-weight:700; font-size:1rem; display:flex; justify-content:space-between; align-items:center; border:none; cursor:pointer;">
+          <span data-i18n="btn_verify_partially">◐ {{ t('btn_verify_partially', 'Partially solved') }}</span>
+          <span
+            style="font-size:0.75rem; opacity:0.9; font-weight:500; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;"
+            data-i18n="status_rework_required">{{ t('status_rework_required', 'Needs More Work') }}</span>
+        </button>
+
+        <button type="button" id="btn-verify-no" onclick="submitModalCitizenVerification('NO')" class="btn touch-btn"
+          style="background:#DC2626; color:#ffffff; padding:0.85rem 1.25rem; border-radius:8px; font-weight:700; font-size:1rem; display:flex; justify-content:space-between; align-items:center; border:none; cursor:pointer;">
+          <span data-i18n="btn_verify_no">✕ {{ t('btn_verify_no', 'No, problem still exists') }}</span>
+          <span
+            style="font-size:0.75rem; opacity:0.9; font-weight:500; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;"
+            data-i18n="btn_reopen">{{ t('btn_reopen', 'Reopen Issue') }}</span>
+        </button>
+
+        <button type="button" id="btn-verify-unable" onclick="submitModalCitizenVerification('UNABLE_TO_VERIFY')"
+          class="btn touch-btn"
+          style="background:#5F686D; color:#ffffff; padding:0.85rem 1.25rem; border-radius:8px; font-weight:600; font-size:0.95rem; display:flex; justify-content:space-between; align-items:center; border:none; cursor:pointer;">
+          <span data-i18n="btn_verify_unable">? {{ t('btn_verify_unable', 'Unable to verify') }}</span>
+          <span
+            style="font-size:0.75rem; opacity:0.9; font-weight:400; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:4px;">Keep
+            Pending</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="background: #F8F4EF;">
+      <button type="button" onclick="closeModal('modal-citizen-verify')" class="btn btn-outline btn-sm" data-i18n="btn_close">{{ t('btn_close', 'Close') }}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let activeVerifyGrievanceId = null;
+
+  function openVerificationModal(id, trackingId, title) {
+    activeVerifyGrievanceId = id;
+    document.getElementById('verify-modal-tracking-id').textContent = trackingId;
+    document.getElementById('verify-modal-title').textContent = title || 'Grievance #' + id;
+    openModal('modal-citizen-verify');
+  }
+
+  async function submitModalCitizenVerification(response) {
+    if (!activeVerifyGrievanceId) return;
+    const remarks = document.getElementById('citizen-verify-remarks')?.value.trim() || '';
+
+    try {
+      const res = await fetch(`/api/grievances/${activeVerifyGrievanceId}/citizen-verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          response: response,
+          verification_method: 'PORTAL',
+          remarks: remarks
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Verification submitted successfully.', 'success');
+        closeModal('modal-citizen-verify');
+        checkVerificationAlerts();
+      } else {
+        alert(data.error || 'Verification failed.');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  async function checkVerificationAlerts() {
+    try {
+      const user = await checkAuth();
+      if (!user) return;
+      const res = await fetch('/api/grievances?scope=my');
+      const data = await res.json();
+      if (data.success && data.grievances) {
+        const pending = data.grievances.filter(g => g.status === 'CITIZEN_VERIFICATION');
+        const alertBox = document.getElementById('citizen-home-alert');
+        if (pending.length > 0) {
+          const isTe = (window.currentLang === 'te');
+          const title = isTe
+            ? `చర్య అవసరం: ${pending.length} ఫిర్యాదుల పనులు పూర్తయ్యాయి`
+            : `Action Needed: Work Completed on ${pending.length} Grievance${pending.length > 1 ? 's' : ''}`;
+          const desc = isTe
+            ? `సిబ్బంది పనులు పూర్తి చేశామని నివేదించారు. దయచేసి సమస్య పరిష్కారమైందో లేదో తనిఖీ చేసి నిర్ధారించండి.`
+            : `Field workers have reported work completed. Please verify if your issue has been solved.`;
+          const btnText = isTe ? `సమీక్షించి ధృవీకరించండి →` : `Review & Confirm →`;
+
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = `
+            <div class="card" style="background:#FEF3C7; border:2px solid #F59E0B; padding:1.25rem; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+              <div>
+                <div style="font-weight:700; color:#92400E; font-size:1rem;">
+                   ${title}
+                </div>
+                <div style="font-size:0.88rem; color:#78350F; margin-top:0.25rem;">
+                  ${desc}
+                </div>
+              </div>
+              <a href="{{ url_for('citizen_track') }}" class="btn btn-sm btn-accent" style="padding:0.6rem 1.2rem; font-weight:700;">
+                ${btnText}
+              </a>
+            </div>
+          `;
+        } else {
+          alertBox.style.display = 'none';
+        }
+      }
+    } catch (e) {
+      console.error('Error checking verification alert:', e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    checkVerificationAlerts();
+  });
+
+  window.addEventListener('languageChanged', () => {
+    checkVerificationAlerts();
+  });
+</script>
+{% endblock %}
